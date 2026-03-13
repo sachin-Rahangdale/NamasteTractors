@@ -13,7 +13,7 @@ public class ImageUploadService {
     @Autowired
     private Cloudinary cloudinary;
 
-    public String UploadImage(MultipartFile file){
+    public String uploadImage(MultipartFile file){
         try{
             Map uploadResult = cloudinary.uploader()
                     .upload(file.getBytes(), ObjectUtils.emptyMap());

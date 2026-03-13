@@ -24,7 +24,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/user/create",
                                 "/api/user/login",
-                                "/api/user/verify"
+                                "/api/user/verify",
+                                "/tractor/create"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
