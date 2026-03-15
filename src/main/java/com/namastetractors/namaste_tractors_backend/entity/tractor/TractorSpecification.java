@@ -7,36 +7,47 @@ import lombok.Data;
 @Entity
 @Table(name = "tractor_specs")
 public class TractorSpecification {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @OneToOne
-    @JoinColumn(name = "tractor_id")
-    private Tractor tractor;
+    private Long tractorId;
 
     private int cylinder;
+
     private int engineCapacity;
 
     private String clutch;
+
     private String steering;
+
     private String gearbox;
+
     private String brakes;
 
     private int torque;
+
     private int backupTorque;
 
     private String ptoHp;
+
     private String ptoOptions;
 
     private String frontTyre;
+
     private String rearTyre;
 
     private String rearAxle;
+
     private String frontAxle;
 
     private String reduction;
 
     private int serviceInterval;
+
+
+
+
+
 }

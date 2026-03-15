@@ -1,4 +1,4 @@
-package com.namastetractors.namaste_tractors_backend.repositroy;
+package com.namastetractors.namaste_tractors_backend.repositroy.tractor;
 
 import com.namastetractors.namaste_tractors_backend.entity.tractor.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;

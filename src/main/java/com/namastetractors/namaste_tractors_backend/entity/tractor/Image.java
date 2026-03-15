@@ -3,24 +3,18 @@ package com.namastetractors.namaste_tractors_backend.entity.tractor;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 @Entity
-@Table(name = "tractors")
-public class Tractor {
+@Table(name = "tractor_images")
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String model;
+    private Long tractorId;
 
-    private int hp;
+    private String imageUrl;
 
-    private double price;
-
-    @ManyToOne
-    @JoinColumn(name = "brand_id")
-    private Brand brand;
+    private String imageType;
 }

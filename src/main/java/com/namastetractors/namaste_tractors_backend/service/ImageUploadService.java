@@ -14,13 +14,15 @@ public class ImageUploadService {
     private Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile file){
-        try{
+
+        try {
             Map uploadResult = cloudinary.uploader()
                     .upload(file.getBytes(), ObjectUtils.emptyMap());
             return uploadResult.get("url").toString();
 
-        }catch (Exception e){
-            throw new RuntimeException("Image Upload Failed");
+        }catch(Exception e){
+                e.printStackTrace();
+                throw new RuntimeException("Image Upload Failed", e);
         }
     }
 }
