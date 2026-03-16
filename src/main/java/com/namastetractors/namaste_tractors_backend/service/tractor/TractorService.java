@@ -30,6 +30,9 @@ public class TractorService {
 
         Brand brand = brandRepo.findById(dto.getBrandId())
                 .orElseThrow(() -> new RuntimeException("Brand not found"));
+        if(dto.getSpecification() == null){
+            throw new RuntimeException("Specification is required");
+        }
 
         Tractor tractor = new Tractor();
         tractor.setModel(dto.getModel());
@@ -82,6 +85,10 @@ public class TractorService {
 
         // specification
         TractorSpecification spec = tractorSpecRepo.findByTractorId(id);
+
+        if(spec == null){
+            throw new RuntimeException("Specification not found");
+        }
 
         TractorSpecDto specDto = new TractorSpecDto();
 
@@ -138,9 +145,119 @@ public class TractorService {
         }).toList();
     }
 
+    public String deleteTractorById(Long id){
+        Tractor tractor = tractorRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tractor not found"));
+        imageRepo.deleteByTractorId(id);
+        tractorSpecRepo.deleteByTractorId(id);
+        tractorRepo.deleteById(id);
 
+        return " Tractor Deleted Succesfully";
+    }
 
+    public Tractor updateTractorById(Long tracId, CreateTractorDto dto){
 
+        Tractor tractor = tractorRepo.findById(tracId)
+                .orElseThrow(() -> new RuntimeException("Tractor doesn't exist"));
 
+        Brand brand = brandRepo.findById(dto.getBrandId())
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
 
+        TractorSpecification tracSpec = tractorSpecRepo.findByTractorId(tracId);
+
+        if(tracSpec == null){
+            throw new RuntimeException("Specification not found");
+        }
+
+        // update tractor
+        tractor.setBrand(brand);
+        tractor.setHp(dto.getHp());
+        tractor.setModel(dto.getModel());
+        tractor.setPrice(dto.getPrice());
+
+        // update specification
+        tracSpec.setBrakes(dto.getSpecification().getBrakes());
+        tracSpec.setClutch(dto.getSpecification().getClutch());
+        tracSpec.setCylinder(dto.getSpecification().getCylinder());
+        tracSpec.setGearbox(dto.getSpecification().getGearbox());
+        tracSpec.setBackupTorque(dto.getSpecification().getBackupTorque());
+        tracSpec.setFrontAxle(dto.getSpecification().getFrontAxle());
+        tracSpec.setReduction(dto.getSpecification().getReduction());
+        tracSpec.setTorque(dto.getSpecification().getTorque());
+        tracSpec.setSteering(dto.getSpecification().getSteering());
+        tracSpec.setServiceInterval(dto.getSpecification().getServiceInterval());
+        tracSpec.setPtoHp(dto.getSpecification().getPtoHp());
+        tracSpec.setPtoOptions(dto.getSpecification().getPtoOptions());
+        tracSpec.setRearTyre(dto.getSpecification().getRearTyre());
+        tracSpec.setFrontTyre(dto.getSpecification().getFrontTyre());
+        tracSpec.setEngineCapacity(dto.getSpecification().getEngineCapacity());
+
+        tractorSpecRepo.save(tracSpec);
+
+        return tractorRepo.save(tractor);
+    }
+
+    public List<TractorCardDto> getTractorByBrand(Long brandId){
+
+        List<Tractor> tractors = tractorRepo.findByBrandId(brandId);
+
+        return tractors.stream().map(tractor -> {
+
+            TractorCardDto dto = new TractorCardDto();
+
+            dto.setId(tractor.getId());
+            dto.setModel(tractor.getModel());
+            dto.setHp(tractor.getHp());
+            dto.setBrand(tractor.getBrand().getName());
+            dto.setPrice(tractor.getPrice());
+
+            String imgUrl = imageRepo
+                    .findByTractorIdAndImageType(tractor.getId(),"FRONT")
+                    .map(Image::getImageUrl)
+                    .orElse(null);
+
+            dto.setImageUrl(imgUrl);
+
+            return dto;
+
+        }).toList();
+    }
+    //Applied Filer to get tractors
+
+    public List<TractorCardDto> filterTractors(
+            Long brandId,
+            Integer minHp,
+            Integer maxHp,
+            Double minPrice,
+            Double maxPrice){
+
+        List<Tractor> tractors = tractorRepo.filterTractors(
+                brandId,
+                minHp,
+                maxHp,
+                minPrice,
+                maxPrice
+        );
+
+        return tractors.stream().map(tractor -> {
+
+            TractorCardDto dto = new TractorCardDto();
+
+            dto.setId(tractor.getId());
+            dto.setModel(tractor.getModel());
+            dto.setHp(tractor.getHp());
+            dto.setPrice(tractor.getPrice());
+            dto.setBrand(tractor.getBrand().getName());
+
+            String imgUrl = imageRepo
+                    .findByTractorIdAndImageType(tractor.getId(),"FRONT")
+                    .map(Image::getImageUrl)
+                    .orElse(null);
+
+            dto.setImageUrl(imgUrl);
+
+            return dto;
+
+        }).toList();
+    }
 }

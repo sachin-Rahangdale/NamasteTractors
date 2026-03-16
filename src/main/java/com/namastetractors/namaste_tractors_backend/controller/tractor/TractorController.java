@@ -60,4 +60,34 @@ public class TractorController {
         return ResponseEntity.ok(tractorService.getAllTractors());
     }
 
+    @PutMapping("/{id}/update")
+    public ResponseEntity<Tractor> updateTractorById(@PathVariable Long id, CreateTractorDto dto){
+        return ResponseEntity.ok(tractorService.updateTractorById(id,dto));
+    }
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<String> deleteTractorById(@PathVariable Long id){
+        return ResponseEntity.ok(tractorService.deleteTractorById(id));
+    }
+    @GetMapping("/{id}/brand")
+    public ResponseEntity<List<TractorCardDto>> getTractorByBrand(@PathVariable Long id){
+        return ResponseEntity.ok(tractorService.getTractorByBrand(id));
+    }
+    @GetMapping("/filter")
+    public List<TractorCardDto> filterTractors(
+
+            @RequestParam(required = false) Long brandId,
+            @RequestParam(required = false) Integer minHp,
+            @RequestParam(required = false) Integer maxHp,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ){
+
+        return tractorService.filterTractors(
+                brandId,
+                minHp,
+                maxHp,
+                minPrice,
+                maxPrice
+        );
+    }
 }

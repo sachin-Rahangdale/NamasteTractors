@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface TractorSpecRepo extends JpaRepository<TractorSpecification , Long> {
 
     TractorSpecification findByTractorId(Long id);
+
+    void deleteByTractorId(Long id);
 }

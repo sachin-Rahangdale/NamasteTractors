@@ -12,4 +12,6 @@ public interface ImageRepo extends JpaRepository<Image,Long> {
     List<Image> findByTractorId(Long id);
 
     Optional<Image> findByTractorIdAndImageType(Long tractorId, String imageType);
+
+    void deleteByTractorId(Long id);
 }
