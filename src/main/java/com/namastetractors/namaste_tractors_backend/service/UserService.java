@@ -40,18 +40,21 @@ public class UserService {
 
     }
 
-    public String Login (LoginDto loginDto){
-        User user = userRepo.findByUsername(loginDto.getUsername())
-                .orElseThrow(()->new RuntimeException(" UserName Does not Exist"));
-        if(!passwordEncoder.matches(loginDto.getPassword(), user.getPassword() )){
-            throw  new RuntimeException("Invalid Password");
-        }
-        if(!user.isEnabled()){
-            throw new RuntimeException("Email is not Verified");
-        }
-        return "Login Successful";
-    }
+    public String login(LoginDto loginDto){
 
+        User user = userRepo.findByUsername(loginDto.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())){
+            throw new RuntimeException("Invalid password");
+        }
+
+        if(!user.isEnabled()){
+            throw new RuntimeException("Email not verified");
+        }
+
+        return user.getUsername(); // 👈 important
+    }
 
 
 

@@ -10,9 +10,13 @@ import com.namastetractors.namaste_tractors_backend.repositroy.tractor.ImageRepo
 import com.namastetractors.namaste_tractors_backend.repositroy.tractor.TractorRepo;
 import com.namastetractors.namaste_tractors_backend.repositroy.tractor.TractorSpecRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TractorService {
@@ -125,9 +129,14 @@ public class TractorService {
     }
 
 
-    public List<TractorCardDto> getAllTractors(){
-        List<Tractor> tractors = tractorRepo.findAll();
-        return tractors.stream().map(tractor -> {
+    public List<TractorCardDto> getAllTractors(int page, int size){
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Tractor> tractorPage = tractorRepo.findAll(pageable);
+
+        return tractorPage.getContent().stream().map(tractor -> {
+
             TractorCardDto dto = new TractorCardDto();
             dto.setId(tractor.getId());
             dto.setModel(tractor.getModel());
@@ -136,12 +145,14 @@ public class TractorService {
             dto.setPrice(tractor.getPrice());
 
             String imgUrl = imageRepo
-                    .findByTractorIdAndImageType(tractor.getId(),"FRONT")
+                    .findByTractorIdAndImageType(tractor.getId(), "FRONT")
                     .map(Image::getImageUrl)
                     .orElse(null);
 
             dto.setImageUrl(imgUrl);
+
             return dto;
+
         }).toList();
     }
 
@@ -197,11 +208,13 @@ public class TractorService {
         return tractorRepo.save(tractor);
     }
 
-    public List<TractorCardDto> getTractorByBrand(Long brandId){
+    public Map<String, Object> getTractorByBrand(Long brandId, int page, int size){
 
-        List<Tractor> tractors = tractorRepo.findByBrandId(brandId);
+        Pageable pageable = PageRequest.of(page, size);
 
-        return tractors.stream().map(tractor -> {
+        Page<Tractor> tractorPage = tractorRepo.findByBrandId(brandId, pageable);
+
+        List<TractorCardDto> list = tractorPage.getContent().stream().map(tractor -> {
 
             TractorCardDto dto = new TractorCardDto();
 
@@ -221,25 +234,38 @@ public class TractorService {
             return dto;
 
         }).toList();
+
+        return Map.of(
+                "content", list,
+                "page", tractorPage.getNumber(),
+                "totalPages", tractorPage.getTotalPages(),
+                "totalElements", tractorPage.getTotalElements()
+        );
     }
     //Applied Filer to get tractors
 
-    public List<TractorCardDto> filterTractors(
+    public Map<String, Object> filterTractors(
             Long brandId,
             Integer minHp,
             Integer maxHp,
             Double minPrice,
-            Double maxPrice){
+            Double maxPrice,
+            int page,
+            int size
+    ){
 
-        List<Tractor> tractors = tractorRepo.filterTractors(
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Tractor> tractorPage = tractorRepo.filterTractors(
                 brandId,
                 minHp,
                 maxHp,
                 minPrice,
-                maxPrice
+                maxPrice,
+                pageable
         );
 
-        return tractors.stream().map(tractor -> {
+        List<TractorCardDto> list = tractorPage.getContent().stream().map(tractor -> {
 
             TractorCardDto dto = new TractorCardDto();
 
@@ -259,5 +285,12 @@ public class TractorService {
             return dto;
 
         }).toList();
+
+        return Map.of(
+                "content", list,
+                "page", tractorPage.getNumber(),
+                "totalPages", tractorPage.getTotalPages(),
+                "totalElements", tractorPage.getTotalElements()
+        );
     }
 }

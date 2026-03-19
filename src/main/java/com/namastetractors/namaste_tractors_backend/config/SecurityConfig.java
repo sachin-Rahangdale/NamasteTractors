@@ -3,6 +3,8 @@ package com.namastetractors.namaste_tractors_backend.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -11,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -22,21 +25,28 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
-                        // PUBLIC APIs
+                        // Swagger
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // Public APIs
                         .requestMatchers(
                                 "/api/user/create",
                                 "/api/user/login",
-                                "/api/user/verify",
-                                "/api/tractors/**",
-                                "/api/articles/**"
+                                "/api/user/verify"
                         ).permitAll()
 
-                        // ADMIN APIs
-                        .requestMatchers(
-                                "/api/admin/**"
-                        ).hasRole("ADMIN")
+                        // Public GET APIs
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/tractors/**",
+                                "/api/articles/**",
+                                "/api/brands/**"
+                        ).permitAll()
 
-                        // Everything else → authenticated
+                        // Everything else requires login
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->

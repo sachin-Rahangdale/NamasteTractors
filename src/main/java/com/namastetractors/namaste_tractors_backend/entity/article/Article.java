@@ -1,5 +1,6 @@
 package com.namastetractors.namaste_tractors_backend.entity.article;
 
+import com.namastetractors.namaste_tractors_backend.emun.Status;
 import com.namastetractors.namaste_tractors_backend.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,6 +22,8 @@ public class Article {
 
     @Column(length = 10000)
     private String content;
+
+    private Status status;
 
     private String mainImageUrl;
 

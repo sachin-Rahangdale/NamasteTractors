@@ -42,27 +42,13 @@ public class UserController {
 
     }
 
-//    @PostMapping("/login")
-//    public String loginUser(@RequestBody LoginDto loginDto){
-//        userService.Login(loginDto);
-//        return " You have Logged in Seccessfully";
-//    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto){
 
-        User user = userRepo.findByUsername(loginDto.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        String username = userService.login(loginDto);
 
-        if(!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())){
-            throw new RuntimeException("Invalid password");
-        }
-
-        if(!user.isEnabled()){
-            throw new RuntimeException("Email not verified");
-        }
-
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(username);
 
         return ResponseEntity.ok(Map.of("token", token));
     }
