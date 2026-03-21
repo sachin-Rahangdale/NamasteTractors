@@ -17,10 +17,11 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secret;
 
-    public String generateToken(String username){
+    public String generateToken(String username, String role){
 
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role) // 👈 IMPORTANT
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)

@@ -9,6 +9,7 @@ import com.namastetractors.namaste_tractors_backend.repositroy.tractor.BrandRepo
 import com.namastetractors.namaste_tractors_backend.repositroy.tractor.ImageRepo;
 import com.namastetractors.namaste_tractors_backend.repositroy.tractor.TractorRepo;
 import com.namastetractors.namaste_tractors_backend.repositroy.tractor.TractorSpecRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -156,6 +157,7 @@ public class TractorService {
         }).toList();
     }
 
+    @Transactional
     public String deleteTractorById(Long id){
         Tractor tractor = tractorRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tractor not found"));
@@ -212,7 +214,7 @@ public class TractorService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Tractor> tractorPage = tractorRepo.findByBrandId(brandId, pageable);
+        Page<Tractor> tractorPage = tractorRepo.findByBrand_Id(brandId, pageable);
 
         List<TractorCardDto> list = tractorPage.getContent().stream().map(tractor -> {
 

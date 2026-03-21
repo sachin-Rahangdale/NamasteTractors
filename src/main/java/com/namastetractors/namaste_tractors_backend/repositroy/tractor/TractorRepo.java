@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface TractorRepo extends JpaRepository<Tractor,Long> {
-    Page<Tractor> findByBrandId(Long brandId, Pageable pageable);
+    Page<Tractor> findByBrand_Id(Long brandId, Pageable pageable);
 
 
     @Query("""

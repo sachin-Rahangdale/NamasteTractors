@@ -28,6 +28,7 @@ public class UserService {
         }
         User user = new User();
         user.setUsername(userCreateDto.getUsername());
+        user.setName(userCreateDto.getName());
         user.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
         user.setRole(Role.USER);
         //generation verification token here
@@ -40,7 +41,7 @@ public class UserService {
 
     }
 
-    public String login(LoginDto loginDto){
+    public User login(LoginDto loginDto){
 
         User user = userRepo.findByUsername(loginDto.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -53,7 +54,7 @@ public class UserService {
             throw new RuntimeException("Email not verified");
         }
 
-        return user.getUsername(); // 👈 important
+        return user; //
     }
 
 

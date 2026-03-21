@@ -3,6 +3,7 @@ package com.namastetractors.namaste_tractors_backend.controller;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.ArticleCardDto;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.ArticleDetailDto;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.CommentDto;
+import com.namastetractors.namaste_tractors_backend.dto.articleDto.CommentResponseDto;
 import com.namastetractors.namaste_tractors_backend.service.article.ArticleService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Validated
 @RestController
@@ -91,19 +94,7 @@ public class ArticleController {
         return articleService.getArticleBySlug(slug);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{id}/comments")
-    public String addComment(
 
-            @PathVariable
-            @NotNull(message = "Article ID is required")
-            Long id,
-
-            @Valid @RequestBody CommentDto dto
-    ){
-        articleService.addComment(id, dto);
-        return "Comment added";
-    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/pending")
@@ -156,5 +147,37 @@ public class ArticleController {
             Long id
     ){
         return articleService.deleteArticleById(id);
+    }
+
+
+
+    // comment
+
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<?> addComment(
+            @PathVariable Long id,
+            @Valid @RequestBody CommentDto dto,
+            Authentication auth
+    ){
+        return ResponseEntity.ok(articleService.addComment(id, dto, auth));
+    }
+
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<?> getComments(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Page<CommentResponseDto> comments =
+                articleService.getCommentsByArticleId(id, page, size);
+
+        return ResponseEntity.ok(Map.of(
+                "page", comments.getNumber(),
+                "totalPages", comments.getTotalPages(),
+                "totalElements", comments.getTotalElements(),
+                "content", comments.getContent()
+        ));
     }
 }

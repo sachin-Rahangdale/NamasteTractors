@@ -3,7 +3,8 @@ package com.namastetractors.namaste_tractors_backend.service.article;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.ArticleCardDto;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.ArticleDetailDto;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.CommentDto;
-import com.namastetractors.namaste_tractors_backend.dto.articleDto.CreateArticleDto;
+import com.namastetractors.namaste_tractors_backend.dto.articleDto.CommentResponseDto;
+import com.namastetractors.namaste_tractors_backend.emun.Role;
 import com.namastetractors.namaste_tractors_backend.emun.Status;
 import com.namastetractors.namaste_tractors_backend.entity.User;
 import com.namastetractors.namaste_tractors_backend.entity.article.Article;
@@ -14,6 +15,7 @@ import com.namastetractors.namaste_tractors_backend.repositroy.article.ArticleIm
 import com.namastetractors.namaste_tractors_backend.repositroy.article.ArticleRepo;
 import com.namastetractors.namaste_tractors_backend.repositroy.article.CommentRepo;
 import com.namastetractors.namaste_tractors_backend.service.ImageUploadService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 public class ArticleService {
@@ -81,7 +83,11 @@ public class ArticleService {
         article.setAuthor(user);
 
         // 👉 IMPORTANT (moderation system)
-        article.setStatus(Status.PENDING);
+        if(user.getRole() == Role.ADMIN){
+            article.setStatus(Status.APPROVED);
+        } else {
+            article.setStatus(Status.PENDING);
+        }
 
         // 7️⃣ Save
         Article saved = articleRepo.save(article);
@@ -92,7 +98,11 @@ public class ArticleService {
         res.setTitle(saved.getTitle());
         res.setSlug(saved.getSlug());
         res.setMainImageUrl(saved.getMainImageUrl());
-        res.setAuthor(user.getUsername());
+        res.setAuthor(
+                user.getName() != null
+                        ? user.getName()
+                        : user.getUsername().split("@")[0]
+        );
         res.setCreatedAt(saved.getCreatedAt());
 
         return res;
@@ -209,22 +219,20 @@ public class ArticleService {
         });
     }
 
-    public void addComment(Long articleId, CommentDto dto){
 
-        Comment comment = new Comment();
-        comment.setArticleId(articleId);
-        comment.setUsername(dto.getUsername());
-        comment.setContent(dto.getContent());
-        comment.setCreatedAt(LocalDateTime.now());
-
-        commentRepo.save(comment);
-    }
-
+    @Transactional
     public String deleteArticleById(Long id){
-        articleRepo.findById(id).orElseThrow(()->new RuntimeException("Article Not Found"));
-        articleRepo.deleteById(id);
-        return "Article Deleted Successfully";
 
+        // 1️⃣ Delete comments of this article
+        commentRepo.deleteByArticleId(id);
+
+        // 2️⃣ Delete images of this article
+        articleImageRepo.deleteByArticleId(id);
+
+        // 3️⃣ Delete article
+        articleRepo.deleteById(id);
+
+        return "Article deleted successfully";
     }
 
     public ArticleDetailDto getArticleById(Long id){
@@ -249,6 +257,56 @@ public class ArticleService {
         return dto;
     }
 
-    //add get comment by article id method also improve addcomment after securizing api
+
+    // methods for Comment
+
+    @Transactional
+    public CommentResponseDto addComment(Long articleId, CommentDto dto, Authentication auth){
+
+        String username = auth.getName();
+
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Comment comment = new Comment();
+        comment.setArticleId(articleId);
+        comment.setContent(dto.getContent());
+        comment.setCreatedAt(LocalDateTime.now());
+        comment.setUser(user); // 🔥 relation
+
+        Comment saved = commentRepo.save(comment);
+
+        // DTO
+        CommentResponseDto res = new CommentResponseDto();
+        res.setId(saved.getId());
+        res.setContent(saved.getContent());
+        res.setName(user.getName()); // 🔥 from user
+        res.setCreatedAt(saved.getCreatedAt());
+
+        return res;
+    }
+
+    public Page<CommentResponseDto> getCommentsByArticleId(Long articleId, int page, int size){
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Comment> comments = commentRepo.findByArticleId(articleId, pageable);
+
+        return comments.map(comment -> {
+            CommentResponseDto dto = new CommentResponseDto();
+            dto.setId(comment.getId());
+            dto.setContent(comment.getContent());
+
+            // 🔥 name from user
+            dto.setName(
+                    comment.getUser().getName() != null
+                            ? comment.getUser().getName()
+                            : comment.getUser().getUsername().split("@")[0]
+            );
+
+            dto.setCreatedAt(comment.getCreatedAt());
+            return dto;
+        });
+    }
 
 }

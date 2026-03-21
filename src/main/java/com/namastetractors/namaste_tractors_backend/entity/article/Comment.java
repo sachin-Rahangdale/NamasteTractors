@@ -1,13 +1,14 @@
 package com.namastetractors.namaste_tractors_backend.entity.article;
 
+import com.namastetractors.namaste_tractors_backend.entity.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "comments")
+@Data
 public class Comment {
 
     @Id
@@ -16,9 +17,11 @@ public class Comment {
 
     private Long articleId;
 
-    private String username;
-
     private String content;
 
     private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
