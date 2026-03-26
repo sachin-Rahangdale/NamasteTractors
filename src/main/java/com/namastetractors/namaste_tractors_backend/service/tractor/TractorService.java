@@ -146,7 +146,7 @@ public class TractorService {
             dto.setPrice(tractor.getPrice());
 
             String imgUrl = imageRepo
-                    .findByTractorIdAndImageType(tractor.getId(), "FRONT")
+                    .findByTractorIdAndImageType(tractor.getId(), "MAIN")
                     .map(Image::getImageUrl)
                     .orElse(null);
 
@@ -227,7 +227,7 @@ public class TractorService {
             dto.setPrice(tractor.getPrice());
 
             String imgUrl = imageRepo
-                    .findByTractorIdAndImageType(tractor.getId(),"FRONT")
+                    .findByTractorIdAndImageType(tractor.getId(),"MAIN")
                     .map(Image::getImageUrl)
                     .orElse(null);
 
@@ -278,7 +278,7 @@ public class TractorService {
             dto.setBrand(tractor.getBrand().getName());
 
             String imgUrl = imageRepo
-                    .findByTractorIdAndImageType(tractor.getId(),"FRONT")
+                    .findByTractorIdAndImageType(tractor.getId(),"MAIN")
                     .map(Image::getImageUrl)
                     .orElse(null);
 

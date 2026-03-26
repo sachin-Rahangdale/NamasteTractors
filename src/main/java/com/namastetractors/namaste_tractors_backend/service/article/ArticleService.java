@@ -155,7 +155,7 @@ public class ArticleService {
                 .toList();
 
         ArticleDetailDto dto = new ArticleDetailDto();
-
+        dto.setId(article.getId());
         dto.setTitle(article.getTitle());
         dto.setContent(article.getContent());
         dto.setMainImageUrl(article.getMainImageUrl());

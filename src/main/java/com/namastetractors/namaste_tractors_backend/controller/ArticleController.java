@@ -132,7 +132,7 @@ public class ArticleController {
         return articleService.rejectArticle(id, reason);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping("/id/{id}")
     public ArticleDetailDto getArticleById(@PathVariable Long id){
         return articleService.getArticleById(id);
