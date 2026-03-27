@@ -1,5 +1,6 @@
 package com.namastetractors.namaste_tractors_backend.entity.tractor;
 
+import com.namastetractors.namaste_tractors_backend.emun.ImageType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,9 +13,13 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long tractorId;
-
     private String imageUrl;
 
-    private String imageType;
+    @Enumerated(EnumType.STRING) // 🔥 VERY IMPORTANT
+    @Column(nullable = false)
+    private ImageType imageType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tractor_id")
+    private Tractor tractor;
 }

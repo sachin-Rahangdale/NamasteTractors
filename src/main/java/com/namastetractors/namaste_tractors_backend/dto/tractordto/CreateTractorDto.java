@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class CreateTractorDto {
 
@@ -15,13 +17,16 @@ public class CreateTractorDto {
     @Max(value = 200, message = "HP cannot exceed 200")
     private int hp;
 
-    @Min(value = 50000, message = "Price must be at least ₹50,000")
-    private double price;
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "50000.0", message = "Price must be at least ₹50,000")
+    @Digits(integer = 10, fraction = 2, message = "Invalid price format")
+    private BigDecimal price;
 
     @NotNull(message = "Brand ID is required")
+    @Positive(message = "Brand ID must be positive")
     private Long brandId;
 
     @NotNull(message = "Specification is required")
-    @Valid   // 🔥 nested validation enable
+    @Valid
     private TractorSpecDto specification;
 }

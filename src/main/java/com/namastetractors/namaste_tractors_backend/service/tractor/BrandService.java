@@ -3,17 +3,20 @@ package com.namastetractors.namaste_tractors_backend.service.tractor;
 import com.namastetractors.namaste_tractors_backend.dto.tractordto.CreateBrandDto;
 import com.namastetractors.namaste_tractors_backend.entity.tractor.Brand;
 import com.namastetractors.namaste_tractors_backend.repositroy.tractor.BrandRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class BrandService {
-    @Autowired
-    private BrandRepo brandRepo;
 
+    private final BrandRepo brandRepo;
+
+    // ================= CREATE =================
     public Brand createBrand(CreateBrandDto dto){
 
         Brand brand = new Brand();
@@ -22,30 +25,39 @@ public class BrandService {
         return brandRepo.save(brand);
     }
 
-
+    // ================= GET ALL =================
+    @Transactional(readOnly = true)
     public List<Brand> getAllBrands(){
         return brandRepo.findAll();
     }
 
-
+    // ================= GET BY ID =================
+    @Transactional(readOnly = true)
     public Brand getBrandById(Long id){
-        return brandRepo.findById(id)
-                .orElseThrow(()-> new RuntimeException(" Brand with specific Id does not exists"));
+        return findBrandOrThrow(id);
     }
 
-
+    // ================= UPDATE =================
     public Brand updateBrandById(Long id, String name){
-        Brand br = brandRepo.findById(id)
-                .orElseThrow(()->new RuntimeException("Brand Does not Exists"));
-        br.setName(name);
-        return brandRepo.save(br);
+
+        Brand brand = findBrandOrThrow(id);
+        brand.setName(name);
+
+        return brandRepo.save(brand);
     }
 
-
+    // ================= DELETE =================
     public String deleteBrandById(Long id){
-        Brand br = brandRepo.findById(id)
-                .orElseThrow(()-> new RuntimeException(" Brand with specific Id does not exists"));
-        brandRepo.delete(br);
-        return " Brand deleted successfully";
+
+        Brand brand = findBrandOrThrow(id);
+        brandRepo.delete(brand);
+
+        return "Brand deleted successfully";
+    }
+
+    // ================= HELPER =================
+    private Brand findBrandOrThrow(Long id){
+        return brandRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
     }
 }

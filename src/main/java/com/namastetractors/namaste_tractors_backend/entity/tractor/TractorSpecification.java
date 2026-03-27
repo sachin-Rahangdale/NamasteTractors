@@ -12,42 +12,24 @@ public class TractorSpecification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long tractorId;
-
     private int cylinder;
-
     private int engineCapacity;
-
     private String clutch;
-
     private String steering;
-
     private String gearbox;
-
     private String brakes;
-
     private int torque;
-
     private int backupTorque;
-
     private String ptoHp;
-
     private String ptoOptions;
-
     private String frontTyre;
-
     private String rearTyre;
-
     private String rearAxle;
-
     private String frontAxle;
-
     private String reduction;
-
     private int serviceInterval;
 
-
-
-
-
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tractor_id")
+    private Tractor tractor;
 }
