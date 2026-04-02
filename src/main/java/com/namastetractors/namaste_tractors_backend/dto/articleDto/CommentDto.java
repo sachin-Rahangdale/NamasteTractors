@@ -10,6 +10,6 @@ public class CommentDto {
 
 
     @NotBlank(message = "Comment content is required")
-    @Size(min = 2, max = 500, message = "Comment must be between 2 and 500 characters")
+    @Size(min = 1, max = 500, message = "Comment must be between 1 and 500 characters")
     private String content;
 }

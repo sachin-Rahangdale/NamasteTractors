@@ -13,4 +13,6 @@ public class ArticleCardDto {
     private String mainImageUrl;
     private String author;
     private LocalDateTime createdAt;
+    private String shortDescription;
+
 }

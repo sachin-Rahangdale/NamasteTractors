@@ -6,10 +6,7 @@ import com.namastetractors.namaste_tractors_backend.dto.articleDto.CommentDto;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.CommentResponseDto;
 import com.namastetractors.namaste_tractors_backend.service.article.ArticleService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -33,7 +30,7 @@ public class ArticleController {
 
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ArticleCardDto createArticle(
+    public ResponseEntity<ArticleCardDto> createArticle(
 
             @RequestParam("title")
             @NotBlank(message = "Title is required")
@@ -55,12 +52,13 @@ public class ArticleController {
             throw new RuntimeException("Image file is empty");
         }
 
-        return articleService.createArticle(title, content, mainImage, authentication);
+        return ResponseEntity.status(201)
+                .body(articleService.createArticle(title, content, mainImage, authentication));
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String uploadImages(
+    public ResponseEntity<?> uploadImages(
 
             @PathVariable
             @NotNull(message = "Article ID is required")
@@ -78,13 +76,14 @@ public class ArticleController {
         }
 
         articleService.uploadImages(id, images);
-        return "Images uploaded successfully";
+        return ResponseEntity.status(201)
+                .body(Map.of("message","Image Uploaded Successfully"))  ;
     }
 
     @GetMapping
     public Page<ArticleCardDto> getAllArticles(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size
     ) {
         return articleService.getAllArticles(page, size);
     }
@@ -99,8 +98,8 @@ public class ArticleController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/pending")
     public Page<ArticleCardDto> getPendingArticles(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) @Max(50) int size
     ) {
         return articleService.getPendingArticles(page, size);
     }
@@ -167,8 +166,8 @@ public class ArticleController {
     @GetMapping("/{id}/comments")
     public ResponseEntity<?> getComments(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") @Min(0)  int page,
+            @RequestParam(defaultValue = "10") @Min(0)  int size
     ){
         Page<CommentResponseDto> comments =
                 articleService.getCommentsByArticleId(id, page, size);
