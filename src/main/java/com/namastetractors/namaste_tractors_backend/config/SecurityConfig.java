@@ -37,14 +37,16 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/user/create",
                                 "/api/user/login",
-                                "/api/user/verify"
+                                "/api/user/verify",
+                                "/api/enquiries"
                         ).permitAll()
 
                         // Public GET APIs
                         .requestMatchers(HttpMethod.GET,
                                 "/api/tractors/**",
                                 "/api/articles/**",
-                                "/api/brands/**"
+                                "/api/brands/**",
+                                "/api/products/**"
                         ).permitAll()
 
                         // Everything else requires login

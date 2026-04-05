@@ -15,9 +15,12 @@ public class Image {
 
     private String imageUrl;
 
+    private String publicId;
+
     @Enumerated(EnumType.STRING) // 🔥 VERY IMPORTANT
     @Column(nullable = false)
     private ImageType imageType;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tractor_id")

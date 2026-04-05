@@ -20,18 +20,10 @@ public class Enquiry {
 
     @Column(length = 1000)
     private String message;
-
     private String pincode;
     private String address;
-
-
-
     private LocalDateTime createdAt;
     private String progress;
     private LocalDateTime updatedAt;
-
-
-
-
 
 }

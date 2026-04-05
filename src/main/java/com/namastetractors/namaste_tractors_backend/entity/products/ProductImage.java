@@ -16,6 +16,10 @@ public class ProductImage {
 
     private String imageUrl;
 
+    private String publicId; // ✅ ADD THIS
+
+    private boolean isMain;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     @JsonIgnore

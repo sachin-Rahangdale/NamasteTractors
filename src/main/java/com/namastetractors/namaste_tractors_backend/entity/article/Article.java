@@ -29,6 +29,7 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+    private String mainImagePublicId;
 
     private String mainImageUrl;
 

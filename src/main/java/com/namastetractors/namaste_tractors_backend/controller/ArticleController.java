@@ -66,7 +66,8 @@ public class ArticleController {
 
             @RequestParam("images")
             @NotEmpty(message = "At least one image is required")
-            List<MultipartFile> images
+            List<MultipartFile> images,
+            Authentication auth
     ){
         // 🔥 extra safety
         for (MultipartFile image : images) {
@@ -74,8 +75,7 @@ public class ArticleController {
                 throw new RuntimeException("One of the images is empty");
             }
         }
-
-        articleService.uploadImages(id, images);
+        articleService.uploadImages(id, images, auth);
         return ResponseEntity.status(201)
                 .body(Map.of("message","Image Uploaded Successfully"))  ;
     }

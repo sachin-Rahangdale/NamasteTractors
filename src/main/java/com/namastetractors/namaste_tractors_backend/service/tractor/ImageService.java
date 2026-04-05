@@ -1,5 +1,6 @@
 package com.namastetractors.namaste_tractors_backend.service.tractor;
 
+import com.namastetractors.namaste_tractors_backend.dto.ImageUploadResult;
 import com.namastetractors.namaste_tractors_backend.dto.tractordto.ImageResponseDto;
 import com.namastetractors.namaste_tractors_backend.dto.tractordto.TractorImageDto;
 import com.namastetractors.namaste_tractors_backend.emun.ImageType;
@@ -45,13 +46,14 @@ public class ImageService {
             );
         }
 
-        // 🔥 4. Upload image
-        String imageUrl = imageUploadService.uploadImage(dto.getImage());
+        // 🔥 4. Upload image (UPDATED)
+        ImageUploadResult uploadResult = imageUploadService.uploadImage(dto.getImage());
 
-        // 🔥 5. Save entity
+        // 🔥 5. Save entity (UPDATED)
         Image image = new Image();
         image.setImageType(dto.getType());
-        image.setImageUrl(imageUrl);
+        image.setImageUrl(uploadResult.getUrl());       // ✅ URL
+        image.setPublicId(uploadResult.getPublicId());  // ✅ PUBLIC ID
         image.setTractor(tractor);
 
         Image savedImage = imageRepo.save(image);

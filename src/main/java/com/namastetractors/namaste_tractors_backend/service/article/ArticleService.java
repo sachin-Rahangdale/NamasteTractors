@@ -1,5 +1,6 @@
 package com.namastetractors.namaste_tractors_backend.service.article;
 
+import com.namastetractors.namaste_tractors_backend.dto.ImageUploadResult;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.ArticleCardDto;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.ArticleDetailDto;
 import com.namastetractors.namaste_tractors_backend.dto.articleDto.CommentDto;
@@ -52,25 +53,33 @@ public class ArticleService {
             Authentication auth
     ){
         String username = auth.getName();
-        User user = userRepo.findByUsername(username).orElseThrow(()->new RuntimeException("User Not Found"));
-        if (mainImage==null || mainImage.isEmpty()){
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
+        if (mainImage == null || mainImage.isEmpty()){
             throw new RuntimeException("Main Image is Required");
         }
-        String mainUrl = imageUploadService.uploadImage(mainImage);
+
+        // 🔥 FIXED: handle ImageUploadResult
+        ImageUploadResult uploadResult = imageUploadService.uploadImage(mainImage);
+        String mainUrl = uploadResult.getUrl();
+
         String baseSlug = title.toLowerCase()
                 .replaceAll("[^a-z0-9\\s]", "")
                 .replaceAll("\\s+", "-");
 
         String slug = baseSlug + "-" + System.currentTimeMillis();
+
         Article article = new Article();
         article.setTitle(title);
         article.setContent(content);
-        article.setMainImageUrl(mainUrl);
+        article.setMainImageUrl(mainUrl); // ✅ using url
         article.setSlug(slug);
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
         article.setAuthor(user);
-        article.setStatus(user.getRole()== Role.ADMIN ? Status.APPROVED : Status.PENDING);
+        article.setStatus(user.getRole() == Role.ADMIN ? Status.APPROVED : Status.PENDING);
+
         Article saved = articleRepo.save(article);
         return mapToCardDto(saved);
     }
@@ -94,16 +103,30 @@ public class ArticleService {
 
 
     @Transactional
-    public void uploadImages(Long articleId, List<MultipartFile> files){
+    public void uploadImages(Long articleId, List<MultipartFile> files, Authentication auth){
+
+        String username = auth.getName();
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
         Article article = articleRepo.findById(articleId)
-                .orElseThrow(()->new RuntimeException("No Article Found Article Id is Incorrect"));
+                .orElseThrow(() -> new RuntimeException("No Article Found Article Id is Incorrect"));
+
+        // 🔐 Ownership check (IMPORTANT)
+        if (!article.getAuthor().getUsername().equals(username)) {
+            throw new RuntimeException("You are not allowed to modify this article");
+        }
 
         for(MultipartFile file : files){
 
-            String url = imageUploadService.uploadImage(file);
+            // 🔥 FIXED: handle ImageUploadResult
+            ImageUploadResult result = imageUploadService.uploadImage(file);
+
             ArticleImage img = new ArticleImage();
             img.setArticle(article);
-            img.setImageUrl(url);
+            img.setImageUrl(result.getUrl());        // ✅ URL
+            img.setPublicId(result.getPublicId());   // ✅ PUBLIC ID
+
             article.getImages().add(img);
         }
     }
@@ -202,6 +225,28 @@ public class ArticleService {
 
         Article article = articleRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Article not found"));
+
+        // 🔐 (Optional but recommended) Ownership check
+        // String username = auth.getName();
+        // if (!article.getAuthor().getUsername().equals(username)) {
+        //     throw new RuntimeException("You are not allowed to delete this article");
+        // }
+
+        // 🔥 1. Delete MAIN image from Cloudinary
+        if (article.getMainImagePublicId() != null) {
+            imageUploadService.deleteImage(article.getMainImagePublicId());
+        }
+
+        // 🔥 2. Delete GALLERY images from Cloudinary
+        if (article.getImages() != null) {
+            for (ArticleImage img : article.getImages()) {
+                if (img.getPublicId() != null) {
+                    imageUploadService.deleteImage(img.getPublicId());
+                }
+            }
+        }
+
+        // 🔥 3. Delete article (cascade handles DB cleanup)
         articleRepo.delete(article);
 
         return "Article deleted successfully";

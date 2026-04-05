@@ -13,6 +13,8 @@ public class ArticleImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String publicId;
+
     private String imageUrl;
 
     // 🔥 RELATION FIXED

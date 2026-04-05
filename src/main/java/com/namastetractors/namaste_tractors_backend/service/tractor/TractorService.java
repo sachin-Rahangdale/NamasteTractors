@@ -1,4 +1,5 @@
 package com.namastetractors.namaste_tractors_backend.service.tractor;
+import com.namastetractors.namaste_tractors_backend.service.ImageUploadService;
 import org.springframework.transaction.annotation.Transactional;
 import com.namastetractors.namaste_tractors_backend.dto.tractordto.*;
 import com.namastetractors.namaste_tractors_backend.emun.ImageType;
@@ -25,6 +26,7 @@ public class TractorService {
 
     private final TractorRepo tractorRepo;
     private final BrandRepo brandRepo;
+    private final ImageUploadService imageUploadService;
 
     // ================= CREATE =================
     public Tractor createTractor(CreateTractorDto dto){
@@ -111,7 +113,17 @@ public class TractorService {
         Tractor tractor = tractorRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tractor not found"));
 
-        tractorRepo.delete(tractor); // 🔥 cascade handles everything
+        // 🔥 1. Delete images from Cloudinary
+        if (tractor.getImages() != null) {
+            for (Image img : tractor.getImages()) {
+                if (img.getPublicId() != null) { // ✅ avoid null (old data)
+                    imageUploadService.deleteImage(img.getPublicId());
+                }
+            }
+        }
+
+        // 🔥 2. Delete tractor (cascade deletes DB images)
+        tractorRepo.delete(tractor);
 
         return "Tractor Deleted Successfully";
     }
