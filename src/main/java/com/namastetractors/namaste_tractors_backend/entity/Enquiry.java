@@ -1,5 +1,6 @@
 package com.namastetractors.namaste_tractors_backend.entity;
 
+import com.namastetractors.namaste_tractors_backend.entity.tractor.Brand;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -17,7 +18,6 @@ public class Enquiry {
     private String name;
     private String phone;
     private String enquiryType;
-
     @Column(length = 1000)
     private String message;
     private String pincode;

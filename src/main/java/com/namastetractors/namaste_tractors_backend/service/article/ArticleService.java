@@ -74,6 +74,7 @@ public class ArticleService {
         article.setTitle(title);
         article.setContent(content);
         article.setMainImageUrl(mainUrl); // ✅ using url
+        article.setMainImagePublicId(uploadResult.getPublicId());
         article.setSlug(slug);
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
