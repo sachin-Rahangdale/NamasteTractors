@@ -39,6 +39,17 @@ public class ProductController {
         ProductCardDto res = productService.createProduct(dto, auth);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/my")
+    public ResponseEntity<Page<ProductCardDto>> getMyProducts(
+            Authentication auth,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(
+                productService.getMyProducts(auth, page, size)
+        );
+    }
 
     // 🔥 2️⃣ ADD IMAGES (Only Logged-in Users)
     @PreAuthorize("isAuthenticated()")

@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface ProductRepo extends JpaRepository<Product, Long > {
     Page<Product> findAll(Pageable pageable);
 
-    Page<Product> findByPincode(String pincode, Pageable pageable);
+    Page<Product> findByUserUsername(String username, Pageable pageable);
 
     Page<Product> findByCityIgnoreCase(String city, Pageable pageable);
 

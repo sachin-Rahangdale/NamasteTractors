@@ -125,6 +125,27 @@ public class ProductService {
             return mapToCardDto(product, imageUrl);
         });
     }
+    // Get PRODUCR BY User
+
+    public Page<ProductCardDto> getMyProducts(Authentication auth, int page, int size) {
+
+        String username = auth.getName();
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Product> products = productRepo.findByUserUsername(username, pageable);
+
+        return products.map(product -> {
+
+            String imageUrl = productImageRepo
+                    .findFirstByProductId(product.getId())
+                    .map(ProductImage::getImageUrl)
+                    .orElse(null);
+
+            return mapToCardDto(product, imageUrl);
+        });
+    }
+
     // 🔥 4️⃣ GET PRODUCT DETAIL
     public ProductDetailDto getProductById(Long id) {
 
