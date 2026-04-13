@@ -50,10 +50,15 @@ public class UserController {
 
         String token = jwtService.generateToken(
                 user.getUsername(),
-                user.getRole().name()   // 👈 IMPORTANT
+                user.getRole().name()
         );
 
-        return ResponseEntity.ok(Map.of("token", token));
+        return ResponseEntity.ok(
+                Map.of(
+                        "token", token,
+                        "role", user.getRole().name()
+                )
+        );
     }
 
 }
