@@ -80,7 +80,7 @@ public class TractorController {
 
     // ================= GET ALL =================
     @GetMapping
-    public ResponseEntity<List<TractorCardDto>> getAllTractors(
+    public ResponseEntity<Page<TractorCardDto>> getAllTractors(
 
             @RequestParam(defaultValue = "0")
             @Min(value = 0, message = "Page cannot be negative")
@@ -119,7 +119,7 @@ public class TractorController {
 
     // ================= GET BY BRAND =================
     @GetMapping("/brand/{brandId}")
-    public ResponseEntity<Map<String, Object>> getTractorByBrand(
+    public ResponseEntity<Page<TractorCardDto>> getTractorByBrand(
 
             @PathVariable @Positive Long brandId,
 
@@ -131,7 +131,7 @@ public class TractorController {
 
     // ================= FILTER =================
     @GetMapping("/filter")
-    public ResponseEntity<Map<String, Object>> filterTractors(
+    public ResponseEntity<Page<TractorCardDto>> filterTractors(
 
             @RequestParam(required = false) Long brandId,
 
