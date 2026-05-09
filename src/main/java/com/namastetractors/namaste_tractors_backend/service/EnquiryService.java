@@ -4,6 +4,9 @@ import com.namastetractors.namaste_tractors_backend.dto.EnquiryRequestDto;
 import com.namastetractors.namaste_tractors_backend.dto.EnquiryResponseDto;
 import com.namastetractors.namaste_tractors_backend.entity.Enquiry;
 import com.namastetractors.namaste_tractors_backend.repositroy.EnquiryRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,11 +41,17 @@ public class EnquiryService {
         return mapToResponseDto(saved);
     }
 
-    public List<EnquiryResponseDto> getAllEnquiries(){
-        List<Enquiry> enq = enquiryRepo.findAll(Sort.by("createdAt").descending());
-        return enq.stream()
-                .map(this::mapToResponseDto)
-                .toList();
+    public Page<EnquiryResponseDto> getAllEnquiries(int page, int size) {
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("createdAt").descending()
+        );
+
+        Page<Enquiry> enquiries = enquiryRepo.findAll(pageable);
+
+        return enquiries.map(this::mapToResponseDto);
     }
     private EnquiryResponseDto mapToResponseDto(Enquiry enq){
 
@@ -56,6 +65,8 @@ public class EnquiryService {
         dto.setPincode(enq.getPincode());
         dto.setAddress(enq.getAddress());
         dto.setCreatedAt(enq.getCreatedAt());
+        dto.setProgress(enq.getProgress());
+        dto.setUpdatedAt(enq.getUpdatedAt());
 
         return dto;
     }

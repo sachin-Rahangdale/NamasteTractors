@@ -13,6 +13,8 @@ public class EnquiryResponseDto {
     private String enquiryType;
     private String message;
     private String pincode;
+    private String progress;
     private String address;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
