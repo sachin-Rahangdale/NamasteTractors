@@ -20,6 +20,8 @@ public class CreateArticleDto {
     @NotNull(message = "Main image is required")
     private MultipartFile mainImage;
 
+
+
     @NotNull(message = "Author ID is required")
     private Long authorId;
 }

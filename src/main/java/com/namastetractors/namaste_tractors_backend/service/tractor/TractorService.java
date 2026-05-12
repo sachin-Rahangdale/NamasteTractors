@@ -222,8 +222,11 @@ public class TractorService {
         spec.setRearTyre(dto.getRearTyre());
         spec.setRearAxle(dto.getRearAxle());
         spec.setFrontAxle(dto.getFrontAxle());
+        spec.setLiftCapacity(dto.getLiftCapacity());
         spec.setReduction(dto.getReduction());
         spec.setServiceInterval(dto.getServiceInterval());
+
+
     }
 
     private void mapSpecEntityToDto(TractorSpecification spec, TractorSpecDto dto){
@@ -244,5 +247,6 @@ public class TractorService {
         dto.setFrontAxle(spec.getFrontAxle());
         dto.setReduction(spec.getReduction());
         dto.setServiceInterval(spec.getServiceInterval());
+        dto.setLiftCapacity(spec.getLiftCapacity());
     }
 }

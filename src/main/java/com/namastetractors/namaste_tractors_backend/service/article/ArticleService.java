@@ -50,6 +50,7 @@ public class ArticleService {
             String title,
             String content,
             MultipartFile mainImage,
+            String articeType,
             Authentication auth
     ){
         String username = auth.getName();
@@ -79,6 +80,7 @@ public class ArticleService {
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
         article.setAuthor(user);
+        article.setArticleType(articeType);
         article.setStatus(user.getRole() == Role.ADMIN ? Status.APPROVED : Status.PENDING);
 
         Article saved = articleRepo.save(article);
@@ -97,6 +99,7 @@ public class ArticleService {
         );
         dto.setCreatedAt(article.getCreatedAt());
         dto.setMainImageUrl(article.getMainImageUrl());
+        dto.setArticleType(article.getArticleType());
         String content = article.getContent();
         dto.setShortDescription(content.length()>120 ? content.substring(0,120)+"...":content);
         return dto;
@@ -152,6 +155,7 @@ public class ArticleService {
         dto.setId(article.getId());
         dto.setTitle(article.getTitle());
         dto.setContent(article.getContent());
+        dto.setArticleType(article.getArticleType());
         dto.setMainImageUrl(article.getMainImageUrl());
         dto.setAuthor(article.getAuthor().getName());
         dto.setImages(article.getImages()

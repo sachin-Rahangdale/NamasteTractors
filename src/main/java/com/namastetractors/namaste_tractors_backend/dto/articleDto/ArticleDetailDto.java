@@ -16,4 +16,7 @@ public class ArticleDetailDto {
     private LocalDateTime createdAt;
     private List<String> images;
     private List<CommentResponseDto> comments;
+    private String articleType;
+
+
 }
