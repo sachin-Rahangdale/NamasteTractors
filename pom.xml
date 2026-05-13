@@ -63,11 +63,7 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -97,6 +93,15 @@
 				<scope>runtime</scope>
 			</dependency>
 
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+
+
+
 			<!-- JSON PARSER -->
 			<dependency>
 				<groupId>io.jsonwebtoken</groupId>
@@ -104,6 +109,11 @@
 				<version>0.11.5</version>
 				<scope>runtime</scope>
 			</dependency>
+
+
+
+
+
 
 
 
