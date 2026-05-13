@@ -28,6 +28,7 @@ public class TractorSpecification {
     private String frontAxle;
     private String reduction;
     private int serviceInterval;
+    private Integer liftCapacity;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tractor_id")

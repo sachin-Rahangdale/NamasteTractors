@@ -13,6 +13,8 @@ public class TractorResponseDto {
     private int hp;
     private BigDecimal price;
 
+    private Long brandId;
+
     private String brand;
 
     private TractorSpecDto specification;

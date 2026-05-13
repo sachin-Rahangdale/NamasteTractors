@@ -14,5 +14,7 @@ public class ArticleCardDto {
     private String author;
     private LocalDateTime createdAt;
     private String shortDescription;
+    private String articleType;
+
 
 }

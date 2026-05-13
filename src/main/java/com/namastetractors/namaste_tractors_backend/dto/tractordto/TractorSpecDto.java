@@ -1,8 +1,6 @@
 package com.namastetractors.namaste_tractors_backend.dto.tractordto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 @Data
 public class TractorSpecDto {
@@ -55,6 +53,11 @@ public class TractorSpecDto {
 
     @NotBlank(message = "Reduction type is required")
     private String reduction;
+
+    @NotNull(message = "Lift capacity is required")
+    @Positive(message = "Lift capacity must be greater than 0")
+    private Integer liftCapacity;
+
 
     @Min(value = 50, message = "Service interval must be at least 50 hours")
     @Max(value = 1000, message = "Service interval too high")

@@ -4,6 +4,7 @@ import com.namastetractors.namaste_tractors_backend.dto.EnquiryRequestDto;
 import com.namastetractors.namaste_tractors_backend.dto.EnquiryResponseDto;
 import com.namastetractors.namaste_tractors_backend.service.EnquiryService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,9 +34,14 @@ public class EnquiryController {
     // ✅ ADMIN ONLY → view all enquiries
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public ResponseEntity<?> getAllEnquiries(){
-        List<EnquiryResponseDto> res = enquiryService.getAllEnquiries();
-        return ResponseEntity.ok(res);
+    public ResponseEntity<Page<EnquiryResponseDto>> getAllEnquiries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        return ResponseEntity.ok(
+                enquiryService.getAllEnquiries(page, size)
+        );
     }
 
     // ✅ ADMIN ONLY → update status

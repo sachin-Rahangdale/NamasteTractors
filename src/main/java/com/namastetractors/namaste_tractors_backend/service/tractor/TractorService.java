@@ -75,36 +75,21 @@ public class TractorService {
 
     // ================= GET ALL =================
     @Transactional(readOnly = true)
-    public List<TractorCardDto> getAllTractors(int page, int size){
+    public Page<TractorCardDto> getAllTractors(int page, int size){
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Tractor> tractorPage = tractorRepo.findAllWithBrand(pageable);
-
-        return tractorPage.getContent()
-                .stream()
-                .map(this::mapToCardDto)
-                .toList();
+        return tractorRepo.findAllWithBrand(pageable)
+                .map(this::mapToCardDto);
     }
 
     @Transactional(readOnly = true)
-    public Map<String, Object> getTractorByBrand(Long brandId, int page, int size){
+    public Page<TractorCardDto> getTractorByBrand(Long brandId, int page, int size){
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Tractor> tractorPage = tractorRepo.findByBrand_Id(brandId, pageable);
-
-        List<TractorCardDto> list = tractorPage.getContent()
-                .stream()
-                .map(this::mapToCardDto)
-                .toList();
-
-        return Map.of(
-                "content", list,
-                "page", tractorPage.getNumber(),
-                "totalPages", tractorPage.getTotalPages(),
-                "totalElements", tractorPage.getTotalElements()
-        );
+        return tractorRepo.findByBrand_Id(brandId, pageable)
+                .map(this::mapToCardDto);
     }
 
     // ================= DELETE =================
@@ -149,7 +134,7 @@ public class TractorService {
 
     // ================= FILTER =================
     @Transactional(readOnly = true)
-    public Map<String, Object> filterTractors(
+    public Page<TractorCardDto> filterTractors(
             Long brandId,
             Integer minHp,
             Integer maxHp,
@@ -161,21 +146,9 @@ public class TractorService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Tractor> tractorPage = tractorRepo.filterTractors(
+        return tractorRepo.filterTractors(
                 brandId, minHp, maxHp, minPrice, maxPrice, pageable
-        );
-
-        List<TractorCardDto> list = tractorPage.getContent()
-                .stream()
-                .map(this::mapToCardDto)
-                .toList();
-
-        return Map.of(
-                "content", list,
-                "page", tractorPage.getNumber(),
-                "totalPages", tractorPage.getTotalPages(),
-                "totalElements", tractorPage.getTotalElements()
-        );
+        ).map(this::mapToCardDto);
     }
 
     // ================= MAPPERS =================
@@ -207,6 +180,7 @@ public class TractorService {
         TractorResponseDto dto = new TractorResponseDto();
 
         dto.setId(tractor.getId());
+        dto.setBrandId(tractor.getBrand().getId());
         dto.setModel(tractor.getModel());
         dto.setHp(tractor.getHp());
         dto.setPrice(tractor.getPrice());
@@ -248,8 +222,11 @@ public class TractorService {
         spec.setRearTyre(dto.getRearTyre());
         spec.setRearAxle(dto.getRearAxle());
         spec.setFrontAxle(dto.getFrontAxle());
+        spec.setLiftCapacity(dto.getLiftCapacity());
         spec.setReduction(dto.getReduction());
         spec.setServiceInterval(dto.getServiceInterval());
+
+
     }
 
     private void mapSpecEntityToDto(TractorSpecification spec, TractorSpecDto dto){
@@ -270,5 +247,6 @@ public class TractorService {
         dto.setFrontAxle(spec.getFrontAxle());
         dto.setReduction(spec.getReduction());
         dto.setServiceInterval(spec.getServiceInterval());
+        dto.setLiftCapacity(spec.getLiftCapacity());
     }
 }

@@ -37,6 +37,8 @@ public class Article {
 
     private LocalDateTime updatedAt;
 
+    private String articleType;
+
     // 🔥 AUTHOR
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")

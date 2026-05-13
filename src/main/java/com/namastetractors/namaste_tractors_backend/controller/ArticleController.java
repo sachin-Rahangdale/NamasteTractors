@@ -46,6 +46,14 @@ public class ArticleController {
             @NotNull(message = "Main image is required")
             MultipartFile mainImage,
 
+            @RequestParam("articleType")
+            @NotBlank(message = "Article type is required")
+            @Pattern(
+                    regexp = "TRACTOR_REVIEWS|MAINTENANCE_TIPS|NEW_LAUNCHES|GOVERNMENT_SCHEMES|FARMING_ADVICE|COMPARISONS",
+                    message = "Invalid article type"
+            )
+            String articleType,
+
             Authentication authentication
     ){
         if (mainImage.isEmpty()) {
@@ -53,7 +61,7 @@ public class ArticleController {
         }
 
         return ResponseEntity.status(201)
-                .body(articleService.createArticle(title, content, mainImage, authentication));
+                .body(articleService.createArticle(title, content, mainImage,articleType, authentication));
     }
 
     @PreAuthorize("isAuthenticated()")
