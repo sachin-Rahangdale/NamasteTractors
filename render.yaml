@@ -1,7 +1,7 @@
 services:
   - type: web
     name: namastetractor-api
-    runtime: java
+    env: java
     buildCommand: "./mvnw clean package -DskipTests"
     startCommand: "java -jar target/*.jar"
     plan: free
