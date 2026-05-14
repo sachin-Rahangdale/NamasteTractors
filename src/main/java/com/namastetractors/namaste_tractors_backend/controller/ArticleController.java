@@ -96,7 +96,7 @@ public class ArticleController {
         return articleService.getAllArticles(page, size);
     }
 
-    @GetMapping("{slug}")
+    @GetMapping("/slug/{slug}")
     public ArticleDetailDto getArticle(@PathVariable String slug){
         return articleService.getArticleBySlug(slug);
     }
