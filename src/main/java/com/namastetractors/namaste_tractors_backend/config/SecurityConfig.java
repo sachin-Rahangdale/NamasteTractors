@@ -46,7 +46,8 @@ public class SecurityConfig {
                                 "/api/tractors/**",
                                 "/api/articles/**",
                                 "/api/brands/**",
-                                "/api/products/**"
+                                "/api/products/**",
+                                "/api/articles/slug/**"
                         ).permitAll()
 
                         // Everything else requires login
