@@ -11,7 +11,9 @@ public class MailService {
     private JavaMailSender javaMailSender;
 //verifying the email address before creating an account so that account must be correct
     public void sendVerificationMail(String email,String token){
-        String link = "http://localhost:8080/api/user/verify?token=" + token;
+        String link =
+                "https://namastetractors.onrender.com/api/user/verify?token="
+                        + token;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject("Verify Your Email");
