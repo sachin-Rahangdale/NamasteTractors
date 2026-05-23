@@ -26,7 +26,7 @@ public class UserService {
 
         if (userRepo.findByUsername(userCreateDto.getUsername()).isPresent()) {
 
-            throw new RuntimeException("Username Already Exist");
+            throw new RuntimeException("Email Already Exist");
         }
 
         User user = new User();
@@ -42,31 +42,31 @@ public class UserService {
         user.setRole(Role.USER);
 
         // verification token
-        String token = UUID.randomUUID().toString();
+        //String token = UUID.randomUUID().toString();
 
-        user.setEmailVerificationToken(token);
+        //user.setEmailVerificationToken(token);
 
         // OPTIONAL BUT RECOMMENDED
-        user.setEnabled(false);
+        user.setEnabled(true);
 
         userRepo.save(user);
 
         // EMAIL SHOULD NOT BREAK SIGNUP
-        try {
+//        try {
+//
+//            mailService.sendVerificationMail(
+//                    user.getUsername(),
+//                    token
+//            );
+//
+//        } catch (Exception e) {
+//
+//            System.out.println("EMAIL SENDING FAILED");
+//
+//            e.printStackTrace();
+//        }
 
-            mailService.sendVerificationMail(
-                    user.getUsername(),
-                    token
-            );
-
-        } catch (Exception e) {
-
-            System.out.println("EMAIL SENDING FAILED");
-
-            e.printStackTrace();
-        }
-
-        return "Account Created, Please Verify Your Email";
+        return "Account Created, Please Login to continue to site";
     }
 
     public User login(LoginDto loginDto){
