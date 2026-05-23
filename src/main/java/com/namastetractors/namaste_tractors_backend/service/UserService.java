@@ -22,23 +22,51 @@ public class UserService {
     private MailService mailService;
 
     //creating an account
-    public String createAccount(UserCreateDto userCreateDto){
-        if(userRepo.findByUsername(userCreateDto.getUsername()).isPresent()){
+    public String createAccount(UserCreateDto userCreateDto) {
+
+        if (userRepo.findByUsername(userCreateDto.getUsername()).isPresent()) {
+
             throw new RuntimeException("Username Already Exist");
         }
+
         User user = new User();
+
         user.setUsername(userCreateDto.getUsername());
+
         user.setName(userCreateDto.getName());
-        user.setPassword(passwordEncoder.encode(userCreateDto.getPassword()));
+
+        user.setPassword(
+                passwordEncoder.encode(userCreateDto.getPassword())
+        );
+
         user.setRole(Role.USER);
-        //generation verification token here
+
+        // verification token
         String token = UUID.randomUUID().toString();
+
         user.setEmailVerificationToken(token);
+
+        // OPTIONAL BUT RECOMMENDED
+        user.setEnabled(false);
+
         userRepo.save(user);
-        mailService.sendVerificationMail(user.getUsername(), token);
+
+        // EMAIL SHOULD NOT BREAK SIGNUP
+        try {
+
+            mailService.sendVerificationMail(
+                    user.getUsername(),
+                    token
+            );
+
+        } catch (Exception e) {
+
+            System.out.println("EMAIL SENDING FAILED");
+
+            e.printStackTrace();
+        }
+
         return "Account Created, Please Verify Your Email";
-
-
     }
 
     public User login(LoginDto loginDto){

@@ -20,7 +20,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private boolean enabled = false;
+    private boolean enabled;
 
     private String emailVerificationToken;
 
