@@ -40,7 +40,7 @@ public class Article {
     private String articleType;
 
     // 🔥 AUTHOR
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private User author;
 
